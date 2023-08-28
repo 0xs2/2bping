@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+    <title>2bping graph</title>
+</head>
+<body>
+    <div id="chart" style="width: 100%; height: 100vh;"></div>
+</body>
+<script>
+$(document).ready(function () {
+    $.ajax({
+        url: '../api/all',
+        dataType: 'json',
+        success: function (data) {
+        var xValues = data.result.map(entry => moment.unix(entry.pingedAt).format("DD-MM-YYYY hh:mm"));    
+        var categories = ['totalOnline', 'totalIngame', 'totalQueue', 'totalPrio'];
+
+    var traces = categories.map(category => ({
+        x: xValues,
+        y: data.result.map(entry => entry[category]),
+        mode: 'lines',
+        name: category.replace('total', ' ')
+    }));
+
+    var layout = {
+        title: '2b2t Statistics Over Time',
+        xaxis: {
+            title: 'Timestamp'
+        },
+        yaxis: {
+            title: 'User Count'
+        },
+        showlegend: true
+    }
+
+    Plotly.newPlot('chart', traces, layout);
+        }
+    });
+});
+
+</script>
+</html>
